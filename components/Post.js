@@ -1,7 +1,7 @@
 import React from "react";
 import {
   EllipsisHorizontalIcon,
-  HeartIcon, BookmarkIcon, ChatBubbleOvalLeftEllipsisIcon,
+  HeartIcon, BookmarkIcon, ChatBubbleOvalLeftEllipsisIcon,FaceSmileIcon
 
 } from "@heroicons/react/24/outline";
 
@@ -27,6 +27,17 @@ function Post({ username, id, profileImg, postImage, caption }) {
         </div>
         <BookmarkIcon className="btn" />
       </div>
+
+      {/* Post caption */}
+
+      <p className="p-4 truncate"><span className="font-bold mr-2">{username}</span>{caption}</p>
+
+      {/* Post comment form */}
+      <form className="flex items-center">
+        <FaceSmileIcon className="h-7" />
+        <input type="text" placeholder="Enter your comment..." className="flex-1 focus:ring-0 border-0" />
+        <button className="font-bold text-blue-400 disabled:text-blue-200">Post</button>
+      </form>
 
     </div>
   );
