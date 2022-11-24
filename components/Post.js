@@ -33,7 +33,7 @@ function Post({ username, id, profileImg, postImage, caption }) {
       <p className="p-4 truncate"><span className="font-bold mr-2">{username}</span>{caption}</p>
 
       {/* Post comment form */}
-      <form className="flex items-center">
+      <form className="flex items-center p-4">
         <FaceSmileIcon className="h-7" />
         <input type="text" placeholder="Enter your comment..." className="flex-1 focus:ring-0 border-0" />
         <button className="font-bold text-blue-400 disabled:text-blue-200">Post</button>
