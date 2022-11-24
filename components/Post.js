@@ -1,7 +1,8 @@
 import React from "react";
 import {
   EllipsisHorizontalIcon,
-  EllipsisVerticalIcon,
+  HeartIcon, BookmarkIcon, ChatBubbleOvalLeftEllipsisIcon,
+
 } from "@heroicons/react/24/outline";
 
 function Post({ username, id, profileImg, postImage, caption }) {
@@ -17,6 +18,15 @@ function Post({ username, id, profileImg, postImage, caption }) {
 
       {/* Post Image Section */}
       <img src={postImage} alt='post image' className="object-cover w-full" />
+
+      {/* Post buttons */}
+      <div className="flex justify-between px-4 pt-4">
+        <div className="flex space-x-4">
+          <HeartIcon className="btn" />
+          <ChatBubbleOvalLeftEllipsisIcon className="btn" />
+        </div>
+        <BookmarkIcon className="btn" />
+      </div>
 
     </div>
   );
