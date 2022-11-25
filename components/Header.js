@@ -5,8 +5,11 @@ import {
   PlusCircleIcon,
 } from "@heroicons/react/24/outline";
 import { HomeIcon } from "@heroicons/react/24/solid";
+import { useSession, signIn, signOut } from 'next-auth/react';
 
 function Header() {
+  const {data : session} = useSession();
+  console.log(session);
   return (
     <>
       {/* // Left */}
@@ -42,16 +45,22 @@ function Header() {
 
           {/* Right Side */}
 
-          <div className="flex space-x-4 items-center">
+          {session ? 
+            <div className="flex space-x-4 items-center">
             <HomeIcon className="h-6 cursor-pointer hover:scale-125 transition-transform duration-200 ease-out hidden md:inline-flex" />
             <PlusCircleIcon className="h-6 cursor-pointer hover:scale-125 transition-transform duration-200 ease-out" />
 
             <img
-              src="https://avatars.githubusercontent.com/u/17096384?v=4"
+              onClick={signOut}
+              src={session.user.image}
               alt="user-image"
               className="h-10 rounded-full cursor-pointer"
             />
           </div>
+          : 
+          <div onClick={signIn} className="cursor-pointer">Sign In</div>
+          }
+          
         </div>
       </div>
     </>

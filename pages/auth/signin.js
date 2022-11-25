@@ -2,8 +2,6 @@ import Header from "../../components/Header";
 import { getProviders, signIn } from "next-auth/react";
 
 function SignIn({ providers }) {
-  console.log(providers);
-
   return (
     <div>
       <Header />
