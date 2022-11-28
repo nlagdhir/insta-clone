@@ -3,14 +3,47 @@ import modalState from "../atom/modalAtom";
 import Modal from "react-modal";
 import { CameraIcon } from "@heroicons/react/24/outline";
 import { useRef, useState } from "react";
+import {addDoc, doc, collection, updateDoc, serverTimestamp} from 'firebase/firestore';
+import { db, storage } from '../firebase';
+import { useSession } from 'next-auth/react';
+import {ref, uploadString, getDownloadURL  } from 'firebase/storage';
 
 function ModalPopup() {
+
   const [open, setOpen] = useRecoilState(modalState);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [loading, setLoading] = useState(false);
   const fileInputRef = useRef(null);
+  const captionRef = useRef(null);
+  const {data: session } = useSession();
+
+  const  uploadPost = async () => {
+    if(loading) return;
+
+    setLoading(true);
+    
+
+    const docRef = await addDoc(collection(db,'posts'),{
+      caption: captionRef.current.value,
+      username : session?.user.username,
+      profileImg : session?.user.image,
+      timestamp: serverTimestamp() 
+    })
+
+    const imageRef = await ref(storage, `posts/${docRef.id}/image`);
+    await uploadString(imageRef, selectedFile, 'data_url').then(async (snapshot) => {
+      const downloadURL = await getDownloadURL(imageRef);
+      await updateDoc(doc(db, 'posts', docRef.id), {
+        image : downloadURL,
+      });
+    });
+
+    setOpen(false);
+    setLoading(false);
+    setSelectedFile(null);
+  } 
 
   const addImagetoFile = (event) => {
-    console.log(event);
     const reader = new FileReader();
     if (event.target.files[0]) {
       reader.readAsDataURL(event.target.files[0]);
@@ -20,7 +53,6 @@ function ModalPopup() {
       setSelectedFile(readerEvent.target.result);
     };
 
-    console.log(selectedFile);
   };
 
   return (
@@ -54,9 +86,10 @@ function ModalPopup() {
               className="w-full border-none m-4 focus:ring-0 text-center"
               maxLength="150"
               placeholder="Please enter your caption..."
+              ref={captionRef}
             />
-            <button
-              disabled
+            <button onClick={uploadPost}
+              disabled={loading || !fileInputRef}
               className="w-full bg-red-300 text-white p-2 shadow-md hover:brightness-125 disabled:bg-gray-200 disabled:hover:brightness-100 disabled:cursor-not-allowed"
             >
               {" "}
