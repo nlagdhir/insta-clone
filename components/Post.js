@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import {
   EllipsisHorizontalIcon,
   HeartIcon,
@@ -7,9 +7,35 @@ import {
   FaceSmileIcon,
 } from "@heroicons/react/24/outline";
 import { useSession } from "next-auth/react";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { db } from "../firebase";
 
 function Post({ username, id, profileImg, postImage, caption }) {
   const { data: session } = useSession();
+  const [comment, setComment] = useState("");
+
+  const handlePostClicked = async (event) => {
+    event.preventDefault();
+    const commentToSend = comment;
+    setComment("");
+    console.log(id);
+
+    // const docRef = await addDoc(collection(db, "cities", 'fQAHPALLtP4VKdj7n5eI', 'comments'), {
+    //   name: "Tokyo",
+    //   country: "Japan"
+    // });
+    // console.log("Document written with ID: ", docRef.id);
+
+    await addDoc(collection(db, "posts", id, "comments"), {
+      comment: commentToSend,
+      username: session.user.username,
+      userImage: session.user.image,
+      timestamp: serverTimestamp(),
+    });
+
+  
+  };
+
   return (
     <div className="bg-white my-7 border rounded-sm">
       {/* Post Header Section */}
@@ -54,8 +80,15 @@ function Post({ username, id, profileImg, postImage, caption }) {
             type="text"
             placeholder="Enter your comment..."
             className="flex-1 focus:ring-0 border-0"
+            value={comment}
+            onChange={(event) => setComment(event.target.value)}
           />
-          <button className="font-bold text-blue-400 disabled:text-blue-200">
+          <button
+            disabled={!comment.trim()}
+            type="submit"
+            onClick={handlePostClicked}
+            className="font-bold text-blue-400 disabled:text-blue-200"
+          >
             Post
           </button>
         </form>
