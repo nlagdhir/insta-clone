@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   EllipsisHorizontalIcon,
   HeartIcon,
@@ -7,24 +7,35 @@ import {
   FaceSmileIcon,
 } from "@heroicons/react/24/outline";
 import { useSession } from "next-auth/react";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+  serverTimestamp,
+} from "firebase/firestore";
 import { db } from "../firebase";
+import Moment from 'react-moment';
 
 function Post({ username, id, profileImg, postImage, caption }) {
   const { data: session } = useSession();
   const [comment, setComment] = useState("");
+  const [comments, setComments] = useState([]);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      query(collection(db, "posts", id, "comments"), orderBy("timestamp","desc")),
+      (snapshot) => {
+        setComments(snapshot.docs);
+      }
+    );
+  }, [db, id]);
 
   const handlePostClicked = async (event) => {
     event.preventDefault();
     const commentToSend = comment;
     setComment("");
-    console.log(id);
-
-    // const docRef = await addDoc(collection(db, "cities", 'fQAHPALLtP4VKdj7n5eI', 'comments'), {
-    //   name: "Tokyo",
-    //   country: "Japan"
-    // });
-    // console.log("Document written with ID: ", docRef.id);
 
     await addDoc(collection(db, "posts", id, "comments"), {
       comment: commentToSend,
@@ -32,8 +43,6 @@ function Post({ username, id, profileImg, postImage, caption }) {
       userImage: session.user.image,
       timestamp: serverTimestamp(),
     });
-
-  
   };
 
   return (
@@ -71,6 +80,18 @@ function Post({ username, id, profileImg, postImage, caption }) {
         <span className="font-bold mr-2">{username}</span>
         {caption}
       </p>
+      {comments.length > 0 && (
+        <div className="mx-7 max-h-24 overflow-y-scroll scrollbar-none">
+          {comments.map((comment) => (
+            <div className="flex items-center space-x-2 mb-2">
+                <img src={comment.data().userImage} alt="user-image" className="h-7 rounded-full object-cover" />  
+                <p className="font-semibold">{comment.data().username}</p>
+                <p className="flex-1 truncate">{comment.data().comment}</p>
+                <Moment fromNow>{comment.data().timestamp?.toDate()}</Moment>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Post comment form */}
       {session && (
