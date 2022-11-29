@@ -11,7 +11,7 @@ function Posts() {
       setPosts(spapshot.docs);
     });
     return unsub;
-  });
+  },[db]);
 
   return (
     <div>

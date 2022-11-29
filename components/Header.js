@@ -8,9 +8,11 @@ import { HomeIcon } from "@heroicons/react/24/solid";
 import { useSession, signIn, signOut } from 'next-auth/react';
 import {useRecoilState} from 'recoil';
 import modalState from "../atom/modalAtom";
+import { useRouter } from 'next/router';
 
 function Header() {
   const {data : session} = useSession();
+  const router = useRouter();
 
   const [open, setOpen] = useRecoilState(modalState);
 
@@ -25,6 +27,7 @@ function Header() {
               alt="logo"
               layout="fill"
               className="object-contain"
+              onClick={() => router.push('/')}
             />
           </div>
           <div className="cursor-pointer h-24 w-10 relative lg:hidden">
@@ -33,6 +36,7 @@ function Header() {
               alt="logo"
               layout="fill"
               className="object-contain"
+              onClick={() => router.push('/')}
             />
           </div>
 
@@ -51,7 +55,7 @@ function Header() {
 
           {session ? 
             <div className="flex space-x-4 items-center">
-            <HomeIcon className="h-6 cursor-pointer hover:scale-125 transition-transform duration-200 ease-out hidden md:inline-flex" />
+            <HomeIcon onClick={() => router.push('/')} className="h-6 cursor-pointer hover:scale-125 transition-transform duration-200 ease-out hidden md:inline-flex" />
             <PlusCircleIcon onClick={() => setOpen(true)} className="h-6 cursor-pointer hover:scale-125 transition-transform duration-200 ease-out" />
 
             <img
