@@ -36,13 +36,11 @@ function Post({ username, id, profileImg, postImage, caption }) {
     );
   }, [db]);
 
-
   useEffect(() => {
     setHasLiked(
       likes.findIndex((like) => like.id === session?.user.uid) !== -1
     );
   }, [likes]);
-  
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
@@ -119,9 +117,13 @@ function Post({ username, id, profileImg, postImage, caption }) {
       {/* Post caption */}
 
       <p className="p-4 truncate">
+        {likes.length > 0 && (
+          <p className="font-bold mb-2">{likes.length} likes</p>
+        )}
         <span className="font-bold mr-2">{username}</span>
         {caption}
       </p>
+
       {comments.length > 0 && (
         <div className="mx-7 max-h-24 overflow-y-scroll scrollbar-none">
           {comments.map((comment) => (
